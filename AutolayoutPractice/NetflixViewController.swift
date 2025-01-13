@@ -53,10 +53,8 @@ class NetflixViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         view.backgroundColor = .black
         view.isUserInteractionEnabled = false
-
         
         setImageView()
         setTextFieldView()
