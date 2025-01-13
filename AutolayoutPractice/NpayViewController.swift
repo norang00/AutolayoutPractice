@@ -10,7 +10,7 @@ import SnapKit
 
 class NpayViewController: UIViewController {
     
-    lazy var segmentedControl = {
+    let segmentedControl = {
         let items: [String] = ["멤버십", "현장결제", "쿠폰"]
         let control = UISegmentedControl(items: items)
         let normalTitleAttributes: [NSAttributedString.Key: Any] = [
