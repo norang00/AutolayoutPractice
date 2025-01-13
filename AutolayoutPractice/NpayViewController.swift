@@ -121,25 +121,8 @@ class NpayViewController: UIViewController {
     func setSegmentedControlView() {
         view.addSubview(segmentedControl)
         
-//        let segmentTitle: [String] = ["멤버십", "현장결제", "쿠폰"]
-//        let normalTitleAttributes: [NSAttributedString.Key: Any] = [
-//            .foregroundColor: UIColor.darkGray,
-//            .font: UIFont.systemFont(ofSize: 14, weight: .bold)
-//        ]
-//        let selectedTitleAttributes: [NSAttributedString.Key: Any] = [
-//            .foregroundColor: UIColor.white,
-//            .font: UIFont.systemFont(ofSize: 16, weight: .bold)
-//        ]
-//        for index in 0..<segmentedControl.numberOfSegments {
-//            segmentedControl.setTitle(segmentTitle[index], forSegmentAt: index)
-//            segmentedControl.setTitleTextAttributes(normalTitleAttributes, for: .normal)
-//            segmentedControl.setTitleTextAttributes(selectedTitleAttributes, for: .selected)
-//            segmentedControl.selectedSegmentTintColor = .gray
-//            segmentedControl.backgroundColor = .black
-//        }
-        
         segmentedControl.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(16)
             make.leading.equalTo(view).offset(30)
             make.trailing.equalTo(view).offset(-30)
             make.height.equalTo(30)
@@ -164,7 +147,7 @@ class NpayViewController: UIViewController {
         popupView.snp.makeConstraints { make in
             make.top.equalTo(segmentedControl.snp.bottom).offset(16)
             make.centerX.equalToSuperview()
-            make.bottom.greaterThanOrEqualTo(view.safeAreaLayoutGuide).offset(-300)
+            make.bottom.greaterThanOrEqualTo(view.safeAreaLayoutGuide).offset(-266)
             make.leading.equalTo(view).offset(16)
             make.trailing.equalTo(view).offset(-16)
         }
