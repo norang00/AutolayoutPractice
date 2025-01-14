@@ -5,11 +5,24 @@
 //  Created by Kyuhee hong on 1/14/25.
 //
 
-import UIKit
+import Alamofire
 import SnapKit
+import UIKit
 
-class LottoViewController: UIViewController, ViewProtocol {
-   
+struct Lotto: Decodable {
+    let drwNoDate: String
+    let drwNo: Int
+    let drwtNo1: Int
+    let drwtNo2: Int
+    let drwtNo3: Int
+    let drwtNo4: Int
+    let drwtNo5: Int
+    let drwtNo6: Int
+    let bnusNo: Int
+}
+
+class LottoViewController: UIViewController, ViewConfiguration {
+    
     let tapGesture = UITapGestureRecognizer()
     
     let textField = UITextField()
@@ -24,7 +37,7 @@ class LottoViewController: UIViewController, ViewProtocol {
     let numberStackView = UIStackView()
     var numberBalls: [UILabel] = []
     let bonusLabel = UILabel()
-
+    
     var numbers: [Int] = Array(1...1154).reversed()
     
     var selectedNumber: Int = 0 {
@@ -32,19 +45,19 @@ class LottoViewController: UIViewController, ViewProtocol {
             textField.text = String(selectedNumber)
         }
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-   
+        
         view.backgroundColor = .white
         navigationItem.title = "Lotto"
         navigationController?.navigationBar.tintColor = .black
         
         pickerView.delegate = self
         pickerView.dataSource = self
-
+        
         makeNumberBalls()
-
+        
         configureHierarchy()
         configureLayout()
         configureView()
@@ -137,17 +150,17 @@ class LottoViewController: UIViewController, ViewProtocol {
         
         resultLabel.text = "당첨결과"
         resultLabel.font = .systemFont(ofSize: 24, weight: .regular)
-
+        
         numberStackView.distribution = .fillEqually
         for (index, label) in numberBalls.enumerated() {
             if index == 6 {
-                    label.text = "+"
-                    label.textColor = .black
-                    label.textAlignment = .center
+                label.text = "+"
+                label.textColor = .black
+                label.textAlignment = .center
                 label.font = .systemFont(ofSize: 16, weight: .bold)
-                    label.frame.size = CGSize(width: 50, height: 50)
-                    label.layer.backgroundColor = UIColor.white.cgColor
-                    label.layer.cornerRadius = 25
+                label.frame.size = CGSize(width: 50, height: 50)
+                label.layer.backgroundColor = UIColor.white.cgColor
+                label.layer.cornerRadius = 25
             } else {
                 label.text = "0"
                 label.textColor = .white
@@ -164,31 +177,84 @@ class LottoViewController: UIViewController, ViewProtocol {
         bonusLabel.textAlignment = .center
         bonusLabel.font = .systemFont(ofSize: 16, weight: .medium)
     }
-
+    
 }
 
 extension LottoViewController {
     @objc
     func textFieldTapped() {
         print(#function)
-
+        
     }
     
     @objc
     func textFieldEndOnExit() {
         print(#function)
-
+        
     }
 }
 
 extension LottoViewController: UIPickerViewDelegate, UIPickerViewDataSource {
+    
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         print(#function)
         selectedNumber = numbers[row]
         textField.text = "\(selectedNumber)"
         resultLabel.text = "\(selectedNumber)회 당첨결과"
+        setAttributedText()
+       
+        // 서버 통신 시작
+        let url = "https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=\(selectedNumber)"
+        AF.request(url).responseDecodable(of: Lotto.self) { response in
+            switch response.result {
+            case .success(let value):
+                self.dateLabel.text = value.drwNoDate
+                
+                var numbers: [Int] = []
+                numbers.append(value.drwtNo1)
+                numbers.append(value.drwtNo2)
+                numbers.append(value.drwtNo3)
+                numbers.append(value.drwtNo4)
+                numbers.append(value.drwtNo5)
+                numbers.append(value.drwtNo6)
+                numbers.sort()
+                self.drawNumberBall(numbers, value.bnusNo)
+                
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    func drawNumberBall(_ numbers: [Int], _ bonus: Int) {
+        for index in 0..<6 {
+            let numberBall = numberBalls[index]
+            let number = numbers[index]
+            numberBall.text = "\(number)"
+            paintNumberBall(number, numberBall)
+        }
         
-        // 글자 색 조정
+        let bonusBall = numberBalls[7]
+        bonusBall.text = "\(bonus)"
+        paintNumberBall(bonus, bonusBall)
+    }
+    
+    func paintNumberBall(_ number: Int, _ numberBall: UILabel) {
+        switch number {
+        case 0..<10:
+            numberBall.layer.backgroundColor = UIColor.lottoYellow.cgColor
+        case 10..<20:
+            numberBall.layer.backgroundColor = UIColor.lottoBlue.cgColor
+        case 20..<30:
+            numberBall.layer.backgroundColor = UIColor.lottoRed.cgColor
+        case 30...:
+            numberBall.layer.backgroundColor = UIColor.lottoGray.cgColor
+        default:
+            print("default")
+        }
+    }
+
+    func setAttributedText() {
         resultLabel.textColor = .lottoTitleYellow
         resultLabel.font = .systemFont(ofSize: 24, weight: .bold)
         let text = resultLabel.text ?? ""
@@ -196,15 +262,12 @@ extension LottoViewController: UIPickerViewDelegate, UIPickerViewDataSource {
         attributedString.addAttribute(.foregroundColor, value: UIColor.black, range: (text as NSString).range(of: "당첨결과"))
         attributedString.addAttribute(.font, value: UIFont.systemFont(ofSize: 24, weight: .regular), range: (text as NSString).range(of: "당첨결과"))
         resultLabel.attributedText = attributedString
-        
-        // 서버 통신 시작
-        
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return String(numbers[row])
     }
-
+    
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return numbers.count
     }
@@ -212,7 +275,6 @@ extension LottoViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
-    
 }
 
 extension LottoViewController: UIGestureRecognizerDelegate {

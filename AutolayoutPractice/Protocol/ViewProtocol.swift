@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol ViewProtocol {
+protocol ViewConfiguration: AnyObject {
     func configureHierarchy()
     func configureLayout()
     func configureView()
