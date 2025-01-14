@@ -41,7 +41,6 @@ class MovieViewController: UIViewController {
         textField.tintColor = .white
         textField.keyboardType = .numberPad
         textField.addTarget(self, action: #selector(textFieldEditingChanged), for: .editingChanged)
-        textField.addTarget(self, action: #selector(textFieldEditingDidEnd), for: .editingDidEnd)
         return textField
     }()
     
