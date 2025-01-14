@@ -82,7 +82,6 @@ class LottoViewController: UIViewController, ViewConfiguration {
         numberBalls.forEach {
             numberStackView.addArrangedSubview($0)
             numberStackView.setCustomSpacing(2, after: $0)
-            print($0)
         }
         
         [textField, infoStackView, underLineView, resultLabel, numberStackView, bonusLabel].forEach {
@@ -127,14 +126,18 @@ class LottoViewController: UIViewController, ViewConfiguration {
             make.horizontalEdges.equalToSuperview().inset(22)
             make.height.equalTo(40)
         }
+        
+        bonusLabel.snp.makeConstraints { make in
+            make.centerX.equalTo(numberBalls[7])
+            make.top.equalTo(numberBalls[7].snp.bottom).offset(6)
+            make.height.equalTo(16)
+        }
     }
     
     func configureView() {
         textField.placeholder = "회차를 검색해보세요"
         textField.borderStyle = .roundedRect
         textField.inputView = pickerView
-        textField.addTarget(self, action: #selector(textFieldTapped), for: .touchUpInside)
-        textField.addTarget(self, action: #selector(textFieldEndOnExit), for: .editingDidEndOnExit)
         
         guideLabel.text = "당첨번호 안내"
         guideLabel.textColor = .black
@@ -173,31 +176,15 @@ class LottoViewController: UIViewController, ViewConfiguration {
         }
         
         bonusLabel.text = "보너스"
-        bonusLabel.textColor = .lottoGray
+        bonusLabel.textColor = .gray
         bonusLabel.textAlignment = .center
-        bonusLabel.font = .systemFont(ofSize: 16, weight: .medium)
-    }
-    
-}
-
-extension LottoViewController {
-    @objc
-    func textFieldTapped() {
-        print(#function)
-        
-    }
-    
-    @objc
-    func textFieldEndOnExit() {
-        print(#function)
-        
+        bonusLabel.font = .systemFont(ofSize: 14, weight: .medium)
     }
 }
 
 extension LottoViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        print(#function)
         selectedNumber = numbers[row]
         textField.text = "\(selectedNumber)"
         resultLabel.text = "\(selectedNumber)회 당첨결과"
@@ -208,7 +195,7 @@ extension LottoViewController: UIPickerViewDelegate, UIPickerViewDataSource {
         AF.request(url).responseDecodable(of: Lotto.self) { response in
             switch response.result {
             case .success(let value):
-                self.dateLabel.text = value.drwNoDate
+                self.dateLabel.text = "\(value.drwNoDate) 추첨"
                 
                 var numbers: [Int] = []
                 numbers.append(value.drwtNo1)
@@ -247,8 +234,10 @@ extension LottoViewController: UIPickerViewDelegate, UIPickerViewDataSource {
             numberBall.layer.backgroundColor = UIColor.lottoBlue.cgColor
         case 20..<30:
             numberBall.layer.backgroundColor = UIColor.lottoRed.cgColor
-        case 30...:
+        case 30..<40:
             numberBall.layer.backgroundColor = UIColor.lottoGray.cgColor
+        case 40...:
+            numberBall.layer.backgroundColor = UIColor.lottoGreen.cgColor
         default:
             print("default")
         }
@@ -284,7 +273,6 @@ extension LottoViewController: UIGestureRecognizerDelegate {
     }
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        print(#function)
         self.view.endEditing(true)
         return true
     }

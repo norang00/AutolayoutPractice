@@ -78,7 +78,6 @@ class ViewController: UIViewController {
     
     @objc
     func buttonTapped(_ sender: UIButton) {
-        print(#function, sender.titleLabel?.text)
         guard let title = sender.titleLabel?.text else {
             print("no title!")
             return
