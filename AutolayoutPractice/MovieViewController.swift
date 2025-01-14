@@ -5,6 +5,8 @@
 //  Created by Kyuhee hong on 1/13/25.
 //
 
+import Alamofire
+import SnapKit
 import UIKit
 
 class MovieViewController: UIViewController {
@@ -13,6 +15,7 @@ class MovieViewController: UIViewController {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "moviebg")
         imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
         return imageView
     }()
     
@@ -52,8 +55,9 @@ class MovieViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.isUserInteractionEnabled = false
-
+        navigationItem.title = "Movie"
+        navigationController?.navigationBar.tintColor = .black
+        
         setBackgroundView()
         setSearchView()
         setTableView()

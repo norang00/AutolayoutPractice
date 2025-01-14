@@ -38,7 +38,7 @@ class LottoViewController: UIViewController, ViewConfiguration {
     var numberBalls: [UILabel] = []
     let bonusLabel = UILabel()
     
-    var numbers: [Int] = Array(1...1154).reversed()
+    var numbers: [Int] = []
     
     var selectedNumber: Int = 0 {
         didSet {
@@ -56,6 +56,7 @@ class LottoViewController: UIViewController, ViewConfiguration {
         pickerView.delegate = self
         pickerView.dataSource = self
         
+        calculateDate()
         makeNumberBalls()
         
         configureHierarchy()
@@ -66,6 +67,12 @@ class LottoViewController: UIViewController, ViewConfiguration {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+    }
+    
+    func calculateDate() {
+        let pastDays: Double = Double(DateCalculator.calculateDays())
+        let round: Int = Int(ceil(pastDays/7))
+        numbers = Array(1...round).reversed()
     }
     
     func makeNumberBalls() {
@@ -183,7 +190,6 @@ class LottoViewController: UIViewController, ViewConfiguration {
 }
 
 extension LottoViewController: UIPickerViewDelegate, UIPickerViewDataSource {
-    
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         selectedNumber = numbers[row]
         textField.text = "\(selectedNumber)"
