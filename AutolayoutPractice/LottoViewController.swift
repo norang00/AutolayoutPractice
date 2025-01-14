@@ -51,6 +51,10 @@ class LottoViewController: UIViewController, ViewProtocol {
         configureTabGesture()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+    
     func makeNumberBalls() {
         for _ in 0..<8 {
             numberBalls.append(UILabel())
@@ -132,15 +136,8 @@ class LottoViewController: UIViewController, ViewProtocol {
         underLineView.backgroundColor = .lightGray
         
         resultLabel.text = "당첨결과"
-        resultLabel.textColor = .lottoTitleYellow
-        resultLabel.textAlignment = .center
-        resultLabel.font = .systemFont(ofSize: 25, weight: .bold)
-        let text = resultLabel.text ?? ""
-        let attributedString = NSMutableAttributedString(string: resultLabel.text ?? "")
-        attributedString.addAttribute(.foregroundColor, value: UIColor.black, range: (text as NSString).range(of: "당첨결과"))
-        attributedString.addAttribute(.font, value: UIFont.systemFont(ofSize: 24, weight: .regular), range: (text as NSString).range(of: "당첨결과"))
-        resultLabel.attributedText = attributedString
-        
+        resultLabel.font = .systemFont(ofSize: 24, weight: .regular)
+
         numberStackView.distribution = .fillEqually
         for (index, label) in numberBalls.enumerated() {
             if index == 6 {
@@ -190,8 +187,18 @@ extension LottoViewController: UIPickerViewDelegate, UIPickerViewDataSource {
         selectedNumber = numbers[row]
         textField.text = "\(selectedNumber)"
         resultLabel.text = "\(selectedNumber)회 당첨결과"
-
+        
+        // 글자 색 조정
+        resultLabel.textColor = .lottoTitleYellow
+        resultLabel.font = .systemFont(ofSize: 24, weight: .bold)
+        let text = resultLabel.text ?? ""
+        let attributedString = NSMutableAttributedString(string: resultLabel.text ?? "")
+        attributedString.addAttribute(.foregroundColor, value: UIColor.black, range: (text as NSString).range(of: "당첨결과"))
+        attributedString.addAttribute(.font, value: UIFont.systemFont(ofSize: 24, weight: .regular), range: (text as NSString).range(of: "당첨결과"))
+        resultLabel.attributedText = attributedString
+        
         // 서버 통신 시작
+        
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
@@ -211,7 +218,7 @@ extension LottoViewController: UIPickerViewDelegate, UIPickerViewDataSource {
 extension LottoViewController: UIGestureRecognizerDelegate {
     func configureTabGesture() {
         tapGesture.delegate = self
-//        self.view.addGestureRecognizer(tapGesture)
+        self.view.addGestureRecognizer(tapGesture)
     }
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
