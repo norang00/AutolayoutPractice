@@ -154,12 +154,14 @@ class LottoViewController: UIViewController, ViewConfiguration {
         dateLabel.text = "2020-05-30 추첨"
         dateLabel.textColor = .gray
         dateLabel.textAlignment = .right
+        dateLabel.isHidden = true
         dateLabel.font = .systemFont(ofSize: 12, weight: .regular)
         
         underLineView.backgroundColor = .lightGray
         
         resultLabel.text = "당첨결과"
         resultLabel.font = .systemFont(ofSize: 24, weight: .regular)
+        resultLabel.isHidden = true
         
         numberStackView.distribution = .fillEqually
         for (index, label) in numberBalls.enumerated() {
@@ -181,11 +183,13 @@ class LottoViewController: UIViewController, ViewConfiguration {
                 label.layer.cornerRadius = 20
             }
         }
+        numberStackView.isHidden = true
         
         bonusLabel.text = "보너스"
         bonusLabel.textColor = .gray
         bonusLabel.textAlignment = .center
         bonusLabel.font = .systemFont(ofSize: 14, weight: .medium)
+        bonusLabel.isHidden = true
     }
 }
 
@@ -213,6 +217,9 @@ extension LottoViewController: UIPickerViewDelegate, UIPickerViewDataSource {
                 numbers.sort()
                 self.drawNumberBall(numbers, value.bnusNo)
                 
+                [self.dateLabel, self.resultLabel, self.numberStackView, self.bonusLabel].forEach {
+                    $0.isHidden = false
+                }
             case .failure(let error):
                 print(error)
             }

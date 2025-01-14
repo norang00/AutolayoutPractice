@@ -70,6 +70,7 @@ class MovieTableViewCell: UITableViewCell {
             make.centerY.equalToSuperview()
             make.leading.equalTo(numberLabel.snp.trailing).offset(16)
             make.height.equalTo(30)
+            make.width.equalTo(200)
         }
         
         dateLabel.snp.makeConstraints { make in
