@@ -119,11 +119,20 @@ extension MovieViewController {
         AF.request(url).responseDecodable(of: Movie.self) { response in
             switch response.result {
             case .success(let value):
-                for index in 0..<10 {
-                    let movie = value.boxOfficeResult.dailyBoxOfficeList[index]
-                    self.movieList.append(DailyBoxOfficeList(rank: movie.rank,
-                                                             movieNm: movie.movieNm,
-                                                             openDt: movie.openDt))
+                if !value.boxOfficeResult.dailyBoxOfficeList.isEmpty {
+                    for index in 0..<10 {
+                        let movie = value.boxOfficeResult.dailyBoxOfficeList[index]
+                        self.movieList.append(DailyBoxOfficeList(rank: movie.rank,
+                                                                 movieNm: movie.movieNm,
+                                                                 openDt: movie.openDt))
+                    }
+                } else {
+                    print("no data")
+                    self.searchTextField.text = ""
+                    self.searchTextField.attributedPlaceholder = NSAttributedString(
+                        string: "다른 날짜를 검색해보세요",
+                        attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+                    )
                 }
             case .failure(let error):
                 print(error)
