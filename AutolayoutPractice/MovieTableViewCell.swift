@@ -74,15 +74,14 @@ class MovieTableViewCell: UITableViewCell {
         
         dateLabel.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
-            make.leading.equalTo(titleLabel.snp.trailing).offset(8)
             make.trailing.equalToSuperview().offset(-20)
         }
     }
     
-    func configureData(_ data: Movie) {
-        numberLabel.text = "\(data.number)"
-        titleLabel.text = data.title
-        dateLabel.text = data.date
+    func configureData(_ movie: DailyBoxOfficeList) {
+        numberLabel.text = "\(movie.rank)"
+        titleLabel.text = movie.movieNm
+        dateLabel.text = movie.openDt
     }
     
 }

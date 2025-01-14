@@ -11,6 +11,8 @@ import UIKit
 
 class MovieViewController: UIViewController {
     
+    let tapGesture = UITapGestureRecognizer()
+    
     let backgroundImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "moviebg")
@@ -25,14 +27,21 @@ class MovieViewController: UIViewController {
         view.layer.opacity = 0.7
         return view
     }()
-
+    
     let searchView = UIView()
-    let searchTextField = {
+    lazy var searchTextField = {
         let textField = UITextField()
-        textField.text = "20200401"
+        textField.attributedPlaceholder = NSAttributedString(
+            string: "예시: 20250115",
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        )
         textField.textColor = .white
         textField.textAlignment = .left
         textField.borderStyle = .none
+        textField.tintColor = .white
+        textField.keyboardType = .numberPad
+        textField.addTarget(self, action: #selector(textFieldEditingChanged), for: .editingChanged)
+        textField.addTarget(self, action: #selector(textFieldEditingDidEnd), for: .editingDidEnd)
         return textField
     }()
     
@@ -42,27 +51,93 @@ class MovieViewController: UIViewController {
         return view
     }()
     
-    let searchButton = {
+    lazy var searchButton = {
         let button = UIButton()
         button.setTitle("검색", for: .normal)
         button.setTitleColor(.black, for: .normal)
+        button.setTitleColor(.lightGray, for: .disabled)
         button.backgroundColor = .white
+        button.isEnabled = false
+        button.addTarget(self, action: #selector(searchButtonTapped), for: .touchUpInside)
         return button
     }()
     
     let tableView = UITableView(frame: .zero)
-    let data = Movie.movieList
-
+    var movieList: [DailyBoxOfficeList] = [] {
+        didSet {
+            tableView.reloadData()
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = "Movie"
-        navigationController?.navigationBar.tintColor = .black
+        navigationItem.title = "일간 박스오피스"
+        let appearance = UINavigationBarAppearance()
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+        navigationItem.standardAppearance = appearance
+        navigationController?.navigationBar.tintColor = .white
+        
+        configureTabGesture()
         
         setBackgroundView()
         setSearchView()
-        setTableView()
+        
+        func firstTask(completion: @escaping () -> Void) {
+            DispatchQueue.global().async {
+                sleep(2)
+                self.getYesterdayData()
+                DispatchQueue.main.async {
+                    completion()
+                }
+            }
+        }
+        
+        func secondTask() {
+            setTableView()
+        }
+        
+        firstTask {
+            secondTask()
+        }
+        //        getYesterdayData()
+        //        setBackgroundView()
+        //        setSearchView()
+        //        setTableView()
     }
     
+}
+
+// MARK: - Data load
+extension MovieViewController {
+    func getYesterdayData() {
+        let yesterday = DateCalculator.getYesterday()
+        getBoxOfficeData(yesterday)
+    }
+    
+    func getBoxOfficeData(_ date: String) {
+        movieList = []
+        let url = "https://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key=87fea7fcd65acfc45d6c523a3ca8711e&targetDt=\(date)"
+        AF.request(url).responseDecodable(of: Movie.self) { response in
+            switch response.result {
+            case .success(let value):
+                for index in 0..<10 {
+                    let movie = value.boxOfficeResult.dailyBoxOfficeList[index]
+                    self.movieList.append(DailyBoxOfficeList(rank: movie.rank,
+                                                             movieNm: movie.movieNm,
+                                                             openDt: movie.openDt))
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
+        /* [고민]
+         아무 숫자 (88888888 같은) 넣어서 돌아오는 값이 없으면 없다고 알려주려고 했는데 왜인지 최신값으로 불러와진다...
+         */
+    }
+}
+ 
+// MARK: - Setting View
+extension MovieViewController {
     func setBackgroundView() {
         [backgroundImageView, overlayView].forEach {
             view.addSubview($0)
@@ -124,43 +199,57 @@ class MovieViewController: UIViewController {
             make.bottom.equalToSuperview()
         }
     }
-
-
 }
 
+// MARK: - Setting Function Connected with View
+extension MovieViewController {
+    
+    @objc func searchButtonTapped() {
+        guard let input = searchTextField.text else { return }
+        getBoxOfficeData(input)
+        searchButton.isEnabled = false
+    }
+    
+    @objc func textFieldEditingChanged() {
+        guard let text = searchTextField.text?.trimmingCharacters(in: [" "]) else { return }
+        if text.count == 8 {
+            searchButton.isEnabled = true
+        } else if text.count > 8 {
+            searchTextField.text = ""
+        } else {
+            searchButton.isEnabled = false
+        }
+    }
+   
+}
+
+// MARK: - TableView
 extension MovieViewController: UITableViewDelegate, UITableViewDataSource {
         
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return movieList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MovieTableViewCell", for: indexPath) as! MovieTableViewCell
-        cell.configureData(data[indexPath.row])
+        cell.configureData(movieList[indexPath.row])
         return cell
     }
 }
 
-struct Movie {
+// MARK: - Gesture
+extension MovieViewController: UIGestureRecognizerDelegate {
+    func configureTabGesture() {
+        tapGesture.delegate = self
+        self.view.addGestureRecognizer(tapGesture)
+    }
     
-    var number: Int
-    var title: String
-    var date: String
-    
-    static let movieList = [
-        Movie(number: 1, title: "엽문4: 더 파이널", date: "2020-04-01"),
-        Movie(number: 2, title: "주디", date: "2020-03-25"),
-        Movie(number: 3, title: "1917", date: "2020-02-19"),
-        Movie(number: 4, title: "인비저블맨", date: "2020-02-26"),
-        Movie(number: 5, title: "n번째 이별 중", date: "2020-04-01"),
-        Movie(number: 6, title: "스케어리 스토리: 어둠의 속삭임", date: "2020-03-25"),
-        Movie(number: 7, title: "날씨의 아이", date: "2019-10-30"),
-        Movie(number: 8, title: "라라랜드", date: "2016-12-07"),
-        Movie(number: 9, title: "너의 이름은.", date: "2017-01-04"),
-        Movie(number: 10, title: "다크 워터스", date: "2020-03-11")
-    ]
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        self.view.endEditing(true)
+        return true
+    }
 }
-
-#Preview {
-    MovieViewController()
-}
+//
+//#Preview {
+//    MovieViewController()
+//}

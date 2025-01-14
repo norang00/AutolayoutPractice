@@ -15,11 +15,23 @@ class DateCalculator {
         format.dateFormat = "yyyy-MM-dd"
         return format
     }()
+    static let dateFormatterNoDash = {
+        let format = DateFormatter()
+        format.locale = Locale(identifier: "ko_KR")
+        format.dateFormat = "yyyyMMdd"
+        return format
+    }()
     
     static func calculateDays() -> Int {
         let startDate = dateFormatter.date(from: "2002-12-07")! // 로또 1회차
         let daysCount = calendar.dateComponents([.day], from: startDate, to: Date())
         let result = daysCount.day! + 1 // 시작일 추가
+        return result
+    }
+    
+    static func getYesterday() -> String {
+        let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: Date())!
+        let result = dateFormatterNoDash.string(from: yesterday)
         return result
     }
 }
