@@ -35,7 +35,7 @@ class Hard1ViewController: UIViewController {
         backgroundImageView.image = UIImage(named: "kakao_background")
         backgroundImageView.contentMode = .scaleAspectFill
         backgroundImageView.alpha = 0.8
-        /* [고민한 부분]
+        /*
          safearea 를 넘어서 영역을 덮고 싶은데 검색해본 메서드로는 잘 동작하지 않았다. (self.edgesForExtendedLayout)
          오토레이웃에서 위아래에 0보다 작은 값을 주면 괜찮지 않을까 했는데 에러가 발생, 이렇게 하는 것도 아닌 것 같다.
          여러가지 실험(?)을 해보다가 결국 배경화면과 같은 색으로 뷰 자체를 칠해서 임시방편으로 삼았다. ㅠㅠ

@@ -10,28 +10,39 @@ import SnapKit
 
 class ViewController: UIViewController {
     
-    lazy var netflixButton: UIButton = {
+//    lazy var netflixButton: UIButton = {
+//        let button = UIButton()
+//        button.setTitle("netflix", for: .normal)
+//        button.setTitleColor(.white, for: .normal)
+//        button.backgroundColor = .netflixRed
+//        button.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
+//        return button
+//    }()
+//
+//    lazy var npayButton: UIButton = {
+//        let button = UIButton()
+//        button.setTitle("npay", for: .normal)
+//        button.setTitleColor(.white, for: .normal)
+//        button.backgroundColor = .npayGreen
+//        button.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
+//        return button
+//    }()
+    
+    lazy var lottoButton: UIButton = {
         let button = UIButton()
-        button.setTitle("netflix", for: .normal)
+        button.setTitle("Lotto", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .netflixRed
-        button.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
-        return button
-    }()
-
-    lazy var npayButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("npay", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .npayGreen
+        button.titleLabel?.font = .systemFont(ofSize: 24, weight: .bold)
+        button.backgroundColor = .systemYellow
         button.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
         return button
     }()
     
     lazy var movieButton: UIButton = {
         let button = UIButton()
-        button.setTitle("movie", for: .normal)
+        button.setTitle("Movie", for: .normal)
         button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 24, weight: .bold)
         button.backgroundColor = .black
         button.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
         return button
@@ -39,33 +50,26 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        navigationItem.backButtonTitle = ""
         view.backgroundColor = .white
         
         configureUI()
     }
     
     func configureUI() {
-        [netflixButton, npayButton, movieButton].forEach {
+        [lottoButton, movieButton].forEach {
             view.addSubview($0)
         }
         
-        netflixButton.snp.makeConstraints { make in
+        lottoButton.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(200)
-            make.centerX.equalToSuperview()
-            make.height.equalTo(75)
-            make.width.equalTo(200)
-        }
-        
-        npayButton.snp.makeConstraints { make in
-            make.top.equalTo(netflixButton.snp.bottom).offset(50)
             make.centerX.equalToSuperview()
             make.height.equalTo(75)
             make.width.equalTo(200)
         }
 
         movieButton.snp.makeConstraints { make in
-            make.top.equalTo(npayButton.snp.bottom).offset(50)
+            make.top.equalTo(lottoButton.snp.bottom).offset(50)
             make.centerX.equalToSuperview()
             make.height.equalTo(75)
             make.width.equalTo(200)
@@ -81,15 +85,10 @@ class ViewController: UIViewController {
         }
         
         switch title {
-        case "netflix":
-            present(NetflixViewController(), animated: true)
-            return
-        case "npay":
-            present(NpayViewController(), animated: true)
-            return
-        case "movie":
-            present(MovieViewController(), animated: true)
-            return
+        case "Lotto":
+            navigationController?.pushViewController(LottoViewController(), animated: true)
+        case "Movie":
+            navigationController?.pushViewController(MovieViewController(), animated: true)
         default:
             print("no view controller")
         }

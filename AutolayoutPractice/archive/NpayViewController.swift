@@ -148,6 +148,7 @@ class NpayViewController: UIViewController {
             make.top.equalTo(segmentedControl.snp.bottom).offset(16)
             make.centerX.equalToSuperview()
             make.bottom.greaterThanOrEqualTo(view.safeAreaLayoutGuide).offset(-266)
+            make.horizontalEdges.equalTo(view).inset(16)
             make.leading.equalTo(view).offset(16)
             make.trailing.equalTo(view).offset(-16)
         }
