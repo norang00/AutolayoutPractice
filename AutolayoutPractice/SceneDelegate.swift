@@ -22,6 +22,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let vc = ViewController()
         let nav = UINavigationController(rootViewController: vc)
         window?.rootViewController = nav
+
+//        let temp = Practice()
+//        window?.rootViewController = temp
         window?.makeKeyAndVisible()
         
     }

@@ -114,17 +114,18 @@ extension MovieViewController {
     }
     
     func getBoxOfficeData(_ date: String) {
-        movieList = []
+//        movieList = []
         let url = "https://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key=87fea7fcd65acfc45d6c523a3ca8711e&targetDt=\(date)"
         AF.request(url).responseDecodable(of: Movie.self) { response in
             switch response.result {
             case .success(let value):
                 if !value.boxOfficeResult.dailyBoxOfficeList.isEmpty {
                     for index in 0..<10 {
-                        let movie = value.boxOfficeResult.dailyBoxOfficeList[index]
-                        self.movieList.append(DailyBoxOfficeList(rank: movie.rank,
-                                                                 movieNm: movie.movieNm,
-                                                                 openDt: movie.openDt))
+                        self.movieList = value.boxOfficeResult.dailyBoxOfficeList
+//                        let movie = value.boxOfficeResult.dailyBoxOfficeList[index]
+//                        self.movieList.append(DailyBoxOfficeList(rank: movie.rank,
+//                                                                 movieNm: movie.movieNm,
+//                                                                 openDt: movie.openDt))
                     }
                 } else {
                     print("no data")
